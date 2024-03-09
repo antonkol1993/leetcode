@@ -1,4 +1,4 @@
-package leetcode.special.number._2864.maximum.odd.binary.number;
+package n2864;
 
 //2864. Maximum Odd Binary Number
 //

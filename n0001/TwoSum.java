@@ -1,13 +1,10 @@
-package leetcode.special.number._1.two.sum;
+package n0001;
 
-import java.util.Arrays;
+/**
+ * 1.  <a href="https://leetcode.com/problems/two-sum">Two Sum</a>
+ */
 
-//1. Two Sum
-//        https://leetcode.com/problems/two-sum/description/
 public class TwoSum {
-
-    public int []array = {3,3};
-    public int target = 6;
     public int[] twoSum(int[] nums, int target) {
 
         int[] sumElements = new int[2];
@@ -21,10 +18,4 @@ public class TwoSum {
         }
         return sumElements;
     }
-
-    public static void main(String[] args) {
-        TwoSum twoSum = new TwoSum();
-        System.out.println(Arrays.toString(twoSum.twoSum(twoSum.array, twoSum.target)));
-    }
-
 }

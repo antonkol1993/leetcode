@@ -1,4 +1,4 @@
-package leetcode.special.number._1582.special.positions.in.a.binary.matrix;
+package n1582;
 
 
 import java.util.Arrays;

@@ -1,4 +1,4 @@
-package leetcode.special.number._746.min.cost.climbing.stairs;
+package n0746;
 
 //746. Min Cost Climbing Stairs
 //        https://leetcode.com/problems/min-cost-climbing-stairs/description/?envType=daily-question&envId=2024-03-06

@@ -1,4 +1,4 @@
-package leetcode.special.number._268.missing.number;
+package n0268;
 
 
 //268. Missing Number
@@ -7,18 +7,13 @@ package leetcode.special.number._268.missing.number;
 
 public class MissingNumber {
 
-    public int[] nums = new int[2];
-
-    public MissingNumber() {
-//        9,6,4,2,3,5,7,0,1
-        nums[0] = 0;
-        nums[1] = 1;
-
-
-    }
-
-
     public int missingNumber(int[] nums) {
+//        int result = nums.length * (nums.length + 1) / 2;
+//        for (int num : nums) {
+//            result -= num;
+//        }
+//        return result;
+
         int missingNumber;
 
         int summ = 0;
