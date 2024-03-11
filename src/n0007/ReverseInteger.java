@@ -19,27 +19,32 @@ public class ReverseInteger {
 
         int countNumbers = 0;
         int delimiter = 1;
-        for (int i = x; i > 0; i /= 10) {
+        for (int i = Math.abs(x); i > 0; i /= 10) {
             countNumbers++;
             delimiter *= 10;
         }
+        countNumbers--;
         delimiter /= 10;
 
         int reverseNumber =0;
         int compositeNumber = 0;
         int forTens = 1;
-        int p = x;
+        int xModule = Math.abs(x);
+
         for (int j = 0; j < countNumbers; j++, delimiter /= 10,forTens *= 10) {
 
-            compositeNumber += p / delimiter;
-            p %= delimiter;
+            compositeNumber += xModule / delimiter;
+            xModule %= delimiter;
             reverseNumber += compositeNumber * forTens;
-
+            if (reverseNumber > max || reverseNumber < min) {
+                return 0;
+            }
 
             compositeNumber = 0;
         }
+
         if (x < 0 ) {
-           return -reverseNumber;
+            return -reverseNumber;
         }
 
 
@@ -51,8 +56,10 @@ public class ReverseInteger {
         int i = 31;
         ReverseInteger reverseInteger = new ReverseInteger();
 
-        System.out.println(reverseInteger.reverse(-354));
-        System.out.println(i * -1);
+        System.out.println(reverseInteger.reverse(1534236466));
+
+        int adasads = Math.abs(-354);
+
 
     }
 
