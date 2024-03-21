@@ -1,4 +1,4 @@
-package n0268;
+package n0268C;
 
 
 //268. Missing Number

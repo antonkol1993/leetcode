@@ -1,4 +1,4 @@
-package n0007;
+package n0007C;
 
 /**
  * 7. <a href="https://leetcode.com/problems/reverse-integer">Reverse Integer</a>

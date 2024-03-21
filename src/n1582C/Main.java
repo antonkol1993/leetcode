@@ -1,4 +1,4 @@
-package n1582;
+package n1582C;
 
 import java.util.Arrays;
 

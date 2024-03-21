@@ -1,4 +1,4 @@
-package n0001;
+package n0001C;
 
 /**
  * 1.  <a href="https://leetcode.com/problems/two-sum">Two Sum</a>

@@ -1,4 +1,4 @@
-package n2864;
+package n2864C;
 
 //2864. Maximum Odd Binary Number
 //
