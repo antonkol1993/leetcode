@@ -1,2 +1,2 @@
-- 1 [Two Sum](src/n0001C/TwoSum.java) -> [leetcode](https://leetcode.com/problems/two-sum)
-- 268 [Missing Number](src/n0268C/MissingNumber.java)
+- 1 [Two Sum](src/n0001/TwoSum.java) -> [leetcode](https://leetcode.com/problems/two-sum)
+- 268 [Missing Number](src/n0268/MissingNumber.java)
