@@ -25,7 +25,7 @@ public class Main {
 
     }
 
-    private static String divideWithPeriod(int a, int b) {
+    static String divideWithPeriod(int a, int b) {
         int integerPart = a / b;
         int remainder = a % b;
 
@@ -60,8 +60,7 @@ public class Main {
         return fixResult(result.toString());
     }
 
-    private static String fixResult(String s) {
-        // Убираем (0) в конце, обрезаем конечные нули и лишнюю точку
+    static String fixResult(String s) {
         if (s.contains(".")) {
             if (s.endsWith("(0)")) {
                 s = s.substring(0, s.length() - 3);
@@ -69,10 +68,10 @@ public class Main {
             if (s.contains("(")) {
                 return s;
             }
-            // Удаляем лишние нули в дробной части
             while (s.endsWith("0")) {
                 s = s.substring(0, s.length() - 1);
             }
+
             if (s.endsWith(".")) {
                 s = s.substring(0, s.length() - 1);
             }
@@ -80,3 +79,4 @@ public class Main {
         return s;
     }
 }
+
