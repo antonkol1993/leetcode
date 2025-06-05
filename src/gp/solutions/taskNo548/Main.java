@@ -3,59 +3,49 @@ package gp.solutions.taskNo548;
 import java.io.*;
 
 public class Main {
-
-
     public static void main(String[] args) throws IOException {
-        BufferedReader reader = new BufferedReader(new FileReader("INPUT.TXT"));
-        String num1 = reader.readLine().trim();
-        String num2 = reader.readLine().trim();
-        reader.close();
+        BufferedReader br = new BufferedReader(new FileReader("INPUT.TXT"));
+        PrintWriter pw = new PrintWriter(new FileWriter("OUTPUT.TXT"));
 
-        int i = 0, j = 0;
-        StringBuilder result = new StringBuilder();
+        // Считываем данные
+        String[] line = br.readLine().split(" ");
+        long x0 = Long.parseLong(line[0]);
+        long y0 = Long.parseLong(line[1]);
 
-        while (i < num1.length() && j < num2.length()) {
-            char c1 = num1.charAt(i);
-            char c2 = num2.charAt(j);
+        line = br.readLine().split(" ");
+        long vx = Long.parseLong(line[0]);
+        long vy = Long.parseLong(line[1]);
 
-            if (c1 < c2) {
-                result.append(c1);
-                i++;
-            } else if (c1 > c2) {
-                result.append(c2);
-                j++;
-            } else {
-                int tempI = i, tempJ = j;
-                while (tempI < num1.length() && tempJ < num2.length() && num1.charAt(tempI) == num2.charAt(tempJ)) {
-                    tempI++;
-                    tempJ++;
-                }
+        line = br.readLine().split(" ");
+        long v = Long.parseLong(line[0]);
+        long t = Long.parseLong(line[1]);
+        long d = Long.parseLong(line[2]);
 
-                if (tempI == num1.length()) {
-                    result.append(c2);
-                    j++;
-                } else if (tempJ == num2.length()) {
-                    result.append(c1);
-                    i++;
-                } else if (num1.charAt(tempI) < num2.charAt(tempJ)) {
-                    result.append(c1);
-                    i++;
-                } else {
-                    result.append(c2);
-                    j++;
-                }
-            }
+        // Конечное положение цели
+        long xt = x0 + vx * t;
+        long yt = y0 + vy * t;
+
+        // Квадрат расстояния от (0,0) до цели
+        long r2 = xt * xt + yt * yt;
+
+        // Длина, которую может пройти корабль
+        long maxDistance = v * t;
+
+        // Проверка
+        long minReachable = d - maxDistance;
+        if (minReachable < 0) minReachable = 0;
+        long min2 = minReachable * minReachable;
+        long max2 = (d + maxDistance) * (d + maxDistance);
+
+        if (r2 >= min2 && r2 <= max2) {
+            pw.println("YES");
+        } else {
+            pw.println("NO");
         }
 
-        result.append(num1.substring(i));
-        result.append(num2.substring(j));
-
-        BufferedWriter writer = new BufferedWriter(new FileWriter("OUTPUT.TXT"));
-        writer.write(result.toString());
-        writer.close();
+        pw.close();
+        br.close();
     }
 }
-
-
 
 
