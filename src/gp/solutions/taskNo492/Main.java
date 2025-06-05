@@ -4,45 +4,42 @@ import java.io.*;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        // Читаем входной файл
-        BufferedReader bufferedReader = new BufferedReader(new FileReader("INPUT.TXT"));
-        PrintWriter printWriter = new PrintWriter(new FileWriter("OUTPUT.TXT"));
+        BufferedReader br = new BufferedReader(new FileReader("INPUT.TXT"));
+        PrintWriter pw = new PrintWriter(new FileWriter("OUTPUT.TXT"));
 
-        // Чтение координат цели
-        String[] parts = bufferedReader.readLine().split(" ");
-        int Tx0 = Integer.parseInt(parts[0]);
-        int Ty0 = Integer.parseInt(parts[1]);
+        String[] line = br.readLine().split(" ");
+        long x0 = Long.parseLong(line[0]);
+        long y0 = Long.parseLong(line[1]);
 
-        // Чтение скорости цели
-        parts = bufferedReader.readLine().split(" ");
-        int VTargetX = Integer.parseInt(parts[0]);
-        int VTargetY = Integer.parseInt(parts[1]);
+        line = br.readLine().split(" ");
+        long vx = Long.parseLong(line[0]);
+        long vy = Long.parseLong(line[1]);
 
-        // Чтение параметров РК-2000
-        parts = bufferedReader.readLine().split(" ");
-        int V = Integer.parseInt(parts[0]);
-        int t = Integer.parseInt(parts[1]);
-        int d = Integer.parseInt(parts[2]);
+        line = br.readLine().split(" ");
+        long v = Long.parseLong(line[0]);
+        long t = Long.parseLong(line[1]);
+        long d = Long.parseLong(line[2]);
 
-        // Положение цели через t секунд
-        long targetX = Tx0 + 1L * VTargetX * t;
-        long targetY = Ty0 + 1L * VTargetY * t;
+        long xt = x0 + vx * t;
+        long yt = y0 + vy * t;
 
-        // Квадрат расстояния от начала координат до цели через t секунд
-        double distanceToTarget = Math.sqrt(targetX * targetX + targetY * targetY);
+        long r2 = xt * xt + yt * yt;
 
-        // Максимальный путь крейсера за t секунд
-        double maxDistance = V * t;
+        long maxDistance = v * t;
+        //проверка
+        long minReachable = d - maxDistance;
+        if (minReachable < 0) minReachable = 0;
+        long min2 = minReachable * minReachable;
+        long max2 = (d + maxDistance) * (d + maxDistance);
 
-        // Проверяем, может ли крейсер оказаться на расстоянии d от цели
-        if (Math.abs(distanceToTarget - d) <= maxDistance + 1e-9) {
-            printWriter.println("YES");
+        if (r2 >= min2 && r2 <= max2) {
+            pw.println("YES");
         } else {
-            printWriter.println("NO");
+            pw.println("NO");
         }
 
-        printWriter.close();
-        bufferedReader.close();
+        pw.close();
+        br.close();
     }
 }
 
