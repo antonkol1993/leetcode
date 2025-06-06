@@ -15,30 +15,35 @@ public class Main {
         BufferedReader reader = new BufferedReader(new FileReader("INPUT.TXT"));
         FileWriter writer = new FileWriter("OUTPUT.TXT");
 
-        String[] parts = reader.readLine().trim().split(" ");
-        String num1 = parts[0];
-        String num2 = parts[1];
-        String num3 = parts[2];
+        String line;
+        while ((line = reader.readLine()) != null) {
+            if (line.trim().isEmpty()) continue; // Пропуск пустых строк
+            String[] parts = line.trim().split(" ");
+            String num1 = parts[0];
+            String num2 = parts[1];
+            String num3 = parts[2];
 
+            digitsA = toDigits(Integer.parseInt(num1));
+            digitsB = toDigits(Integer.parseInt(num2));
+            digitsC = toDigits(Integer.parseInt(num3));
 
-        digitsA = toDigits(Integer.parseInt(num1));
-        digitsB = toDigits(Integer.parseInt(num2));
-        digitsC = toDigits(Integer.parseInt(num3));
+            boolean[] usedA = new boolean[digitsA.size()];
+            boolean[] usedB = new boolean[digitsB.size()];
+            resultA = new int[digitsC.size()];
+            resultB = new int[digitsC.size()];
+            found = false; // Сброс флага перед запуском dfs
 
-        boolean[] usedA = new boolean[digitsA.size()];
-        boolean[] usedB = new boolean[digitsB.size()];
-        resultA = new int[digitsC.size()];
-        resultB = new int[digitsC.size()];
+            dfs(digitsC.size() - 1, 0, usedA, usedB, new ArrayList<>(), new ArrayList<>());
 
-        dfs(digitsC.size() - 1, 0, usedA, usedB, new ArrayList<>(), new ArrayList<>());
-
-        if (found) {
-            writer.write("YES\n");
-            writer.write(join(resultA) + " " + join(resultB) + "\n");
-        } else {
-            writer.write("NO\n");
+            if (found) {
+                writer.write("YES\n");
+                writer.write(join(resultA) + " " + join(resultB) + "\n");
+            } else {
+                writer.write("NO\n");
+            }
         }
 
+        reader.close();
         writer.close();
     }
 
