@@ -4,105 +4,145 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
+    static int n;              // длина числа C
+    static int[] digitsA;      // цифры A (от младшего к старшему)
+    static int[] digitsB;      // цифры B (от младшего к старшему)
+    static int[] digitsC;      // цифры C (от младшего к старшему)
+    static boolean[] usedA;
+    static boolean[] usedB;
+    static int[] answerX;
+    static int[] answerY;
+    static boolean found;
+
     public static void main(String[] args) throws IOException {
-
-        long startTime = System.currentTimeMillis();
-        Runtime runtime = Runtime.getRuntime();
-        runtime.gc();
-        long memBefore = runtime.totalMemory() - runtime.freeMemory();
-
-
-
         BufferedReader reader = new BufferedReader(new FileReader("INPUT.TXT"));
         BufferedWriter writer = new BufferedWriter(new FileWriter("OUTPUT.TXT"));
 
         String line;
         while ((line = reader.readLine()) != null) {
             String[] parts = line.trim().split(" ");
+            if (parts.length < 3) {
+                writer.write("NO\n");
+                continue;
+            }
+
             String a = parts[0];
             String b = parts[1];
             String c = parts[2];
-            int cVal = Integer.parseInt(c);
 
+            // Быстрая проверка кратности 9 (необходимое условие)
             int sumA = digitSum(a);
             int sumB = digitSum(b);
             int sumC = digitSum(c);
-
             if ((sumA + sumB - sumC) % 9 != 0) {
                 writer.write("NO\n");
                 continue;
             }
 
-            // result[0] = minX, result[1] = bestX, result[2] = bestY
-            int[] result = {Integer.MAX_VALUE, -1, -1};
+            digitsA = toDigitsReversed(a);
+            digitsB = toDigitsReversed(b);
+            digitsC = toDigitsReversed(c);
+            n = digitsC.length;
 
-            permuteA(a.toCharArray(), 0, b.toCharArray(), cVal, result);
+            usedA = new boolean[digitsA.length];
+            usedB = new boolean[digitsB.length];
 
-            if (result[1] != -1) {
+            answerX = null;
+            answerY = null;
+            found = false;
+
+            // Запускаем DFS с позиции 0 и переносом 0
+            if (dfs(0, 0, new ArrayList<>(), new ArrayList<>())) {
                 writer.write("YES\n");
-                writer.write(result[1] + " " + result[2] + "\n");
+                writer.write(toNumberString(answerX) + " " + toNumberString(answerY) + "\n");
             } else {
                 writer.write("NO\n");
             }
         }
-        writer.close();
         reader.close();
-
-
-
-        long endTime = System.currentTimeMillis();
-        runtime.gc();
-        long memAfter = runtime.totalMemory() - runtime.freeMemory();
-        System.out.println("Время выполнения: " + (endTime - startTime) + " ms");
-        System.out.println("Использовано памяти: " + ((memAfter - memBefore) / 1024) + " KB");
+        writer.close();
     }
 
-    private static void permuteA(char[] aChars, int index, char[] bChars, int cVal, int[] result) {
-        if (index == aChars.length) {
-            String normalized = normalizeNumber(new String(aChars));
-            int x = Integer.parseInt(normalized);
+    private static boolean dfs(int pos, int carry, List<Integer> currentX, List<Integer> currentY) {
+        if (found) return true; // прерывание после нахождения решения
 
-            permuteB(bChars, 0, cVal, x, result);
-            return;
+        if (pos == n) {
+            if (carry == 0 && allUsed(usedA) && allUsed(usedB)) {
+                answerX = new int[currentX.size()];
+                answerY = new int[currentY.size()];
+                for (int i = 0; i < currentX.size(); i++) answerX[i] = currentX.get(i);
+                for (int i = 0; i < currentY.size(); i++) answerY[i] = currentY.get(i);
+                found = true;
+                return true;
+            }
+            return false;
         }
-        Set<Character> used = new HashSet<>();
-        for (int i = index; i < aChars.length; i++) {
-            if (!used.contains(aChars[i])) {
-                used.add(aChars[i]);
-                swap(aChars, index, i);
-                permuteA(aChars, index + 1, bChars, cVal, result);
-                swap(aChars, index, i);
+
+        int targetDigit = digitsC[pos];
+
+        // Перебираем i,j, i и j могут быть "пустыми" позициями (число короче)
+        // Чтобы учесть "пропуск" цифры, добавляем фиктивный индекс digitsA.length и digitsB.length,
+        // означающий "цифры нет (0)"
+        for (int i = 0; i <= digitsA.length; i++) {
+            if (i < digitsA.length && usedA[i]) continue;
+            int digitA = (i < digitsA.length) ? digitsA[i] : 0;
+
+            for (int j = 0; j <= digitsB.length; j++) {
+                if (j < digitsB.length && usedB[j]) continue;
+                int digitB = (j < digitsB.length) ? digitsB[j] : 0;
+
+                int sum = digitA + digitB + carry;
+                if (sum % 10 == targetDigit) {
+                    // Используем цифры, если не фиктивные
+                    if (i < digitsA.length) usedA[i] = true;
+                    if (j < digitsB.length) usedB[j] = true;
+
+                    currentX.add(digitA);
+                    currentY.add(digitB);
+
+                    if (dfs(pos + 1, sum / 10, currentX, currentY)) return true;
+
+                    currentX.remove(currentX.size() - 1);
+                    currentY.remove(currentY.size() - 1);
+
+                    if (i < digitsA.length) usedA[i] = false;
+                    if (j < digitsB.length) usedB[j] = false;
+                }
             }
         }
+        return false;
     }
 
-    private static void permuteB(char[] bChars, int index, int cVal, int x, int[] result) {
-        if (index == bChars.length) {
-            String normalized = normalizeNumber(new String(bChars));
-
-            int y = Integer.parseInt(new String(bChars));
-            if (x + y == cVal && x < result[0]) {
-                result[0] = x;
-                result[1] = x;
-                result[2] = y;
-            }
-            return;
+    private static boolean allUsed(boolean[] used) {
+        for (boolean b : used) {
+            if (!b) return false;
         }
-        Set<Character> used = new HashSet<>();
-        for (int i = index; i < bChars.length; i++) {
-            if (!used.contains(bChars[i])) {
-                used.add(bChars[i]);
-                swap(bChars, index, i);
-                permuteB(bChars, index + 1, cVal, x, result);
-                swap(bChars, index, i);
-            }
-        }
+        return true;
     }
 
-    private static void swap(char[] arr, int i, int j) {
-        char tmp = arr[i];
-        arr[i] = arr[j];
-        arr[j] = tmp;
+    private static boolean hasLeadingZero(int[] digits) {
+        // digits в обратном порядке, ведущий ноль - последний элемент массива, если длина > 1
+        return digits.length > 1 && digits[digits.length - 1] == 0;
+    }
+
+    private static int[] toDigitsReversed(String num) {
+        int len = num.length();
+        int[] digits = new int[len];
+        for (int i = 0; i < len; i++) {
+            digits[i] = num.charAt(len - 1 - i) - '0';
+        }
+        return digits;
+    }
+
+    private static String toNumberString(int[] digits) {
+        StringBuilder sb = new StringBuilder();
+        boolean leadingZero = true;
+        for (int i = digits.length - 1; i >= 0; i--) {
+            if (leadingZero && digits[i] == 0 && digits.length > 1) continue;
+            leadingZero = false;
+            sb.append(digits[i]);
+        }
+        return sb.toString();
     }
 
     private static int digitSum(String num) {
@@ -112,13 +152,4 @@ public class Main {
         }
         return sum;
     }
-
-    private static String normalizeNumber(String num) {
-        int i = 0;
-        while (i < num.length() - 1 && num.charAt(i) == '0') {
-            i++;
-        }
-        return num.substring(i);
-    }
-
 }
