@@ -4,107 +4,121 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
-    static List<Integer> digitsA;
-    static List<Integer> digitsB;
-    static List<Integer> digitsC;
-    static boolean found = false;
-    static int[] resultA;
-    static int[] resultB;
-
     public static void main(String[] args) throws IOException {
+
+        long startTime = System.currentTimeMillis();
+        Runtime runtime = Runtime.getRuntime();
+        runtime.gc();
+        long memBefore = runtime.totalMemory() - runtime.freeMemory();
+
+
+
         BufferedReader reader = new BufferedReader(new FileReader("INPUT.TXT"));
-        FileWriter writer = new FileWriter("OUTPUT.TXT");
+        BufferedWriter writer = new BufferedWriter(new FileWriter("OUTPUT.TXT"));
 
         String line;
         while ((line = reader.readLine()) != null) {
-            if (line.trim().isEmpty()) continue; // Пропуск пустых строк
             String[] parts = line.trim().split(" ");
-            String num1 = parts[0];
-            String num2 = parts[1];
-            String num3 = parts[2];
+            String a = parts[0];
+            String b = parts[1];
+            String c = parts[2];
+            int cVal = Integer.parseInt(c);
 
-            digitsA = toDigits(Integer.parseInt(num1));
-            digitsB = toDigits(Integer.parseInt(num2));
-            digitsC = toDigits(Integer.parseInt(num3));
+            int sumA = digitSum(a);
+            int sumB = digitSum(b);
+            int sumC = digitSum(c);
 
-            boolean[] usedA = new boolean[digitsA.size()];
-            boolean[] usedB = new boolean[digitsB.size()];
-            resultA = new int[digitsC.size()];
-            resultB = new int[digitsC.size()];
-            found = false; // Сброс флага перед запуском dfs
+            if ((sumA + sumB - sumC) % 9 != 0) {
+                writer.write("NO\n");
+                continue;
+            }
 
-            dfs(digitsC.size() - 1, 0, usedA, usedB, new ArrayList<>(), new ArrayList<>());
+            // result[0] = minX, result[1] = bestX, result[2] = bestY
+            int[] result = {Integer.MAX_VALUE, -1, -1};
 
-            if (found) {
+            permuteA(a.toCharArray(), 0, b.toCharArray(), cVal, result);
+
+            if (result[1] != -1) {
                 writer.write("YES\n");
-                writer.write(join(resultA) + " " + join(resultB) + "\n");
+                writer.write(result[1] + " " + result[2] + "\n");
             } else {
                 writer.write("NO\n");
             }
         }
-
-        reader.close();
         writer.close();
+        reader.close();
+
+
+
+        long endTime = System.currentTimeMillis();
+        runtime.gc();
+        long memAfter = runtime.totalMemory() - runtime.freeMemory();
+        System.out.println("Время выполнения: " + (endTime - startTime) + " ms");
+        System.out.println("Использовано памяти: " + ((memAfter - memBefore) / 1024) + " KB");
     }
 
-    static List<Integer> toDigits(int n) {
-        List<Integer> res = new ArrayList<>();
-        if (n == 0) res.add(0);
-        while (n > 0) {
-            res.add(n % 10);
-            n /= 10;
+    private static void permuteA(char[] aChars, int index, char[] bChars, int cVal, int[] result) {
+        if (index == aChars.length) {
+            String normalized = normalizeNumber(new String(aChars));
+            int x = Integer.parseInt(normalized);
+
+            permuteB(bChars, 0, cVal, x, result);
+            return;
         }
-        return res;
+        Set<Character> used = new HashSet<>();
+        for (int i = index; i < aChars.length; i++) {
+            if (!used.contains(aChars[i])) {
+                used.add(aChars[i]);
+                swap(aChars, index, i);
+                permuteA(aChars, index + 1, bChars, cVal, result);
+                swap(aChars, index, i);
+            }
+        }
     }
 
-    static void dfs(int pos, int carry, boolean[] usedA, boolean[] usedB,
-                    List<Integer> pathA, List<Integer> pathB) {
-        if (found) return;
-        if (pos < 0) {
-            if (carry == 0 && pathA.size() == digitsC.size()) {
-                Collections.reverse(pathA);
-                Collections.reverse(pathB);
-                for (int i = 0; i < digitsC.size(); i++) {
-                    resultA[i] = pathA.get(i);
-                    resultB[i] = pathB.get(i);
-                }
-                if (resultA[0] != 0 && resultB[0] != 0) {
-                    found = true;
-                }
+    private static void permuteB(char[] bChars, int index, int cVal, int x, int[] result) {
+        if (index == bChars.length) {
+            String normalized = normalizeNumber(new String(bChars));
+
+            int y = Integer.parseInt(new String(bChars));
+            if (x + y == cVal && x < result[0]) {
+                result[0] = x;
+                result[1] = x;
+                result[2] = y;
             }
             return;
         }
-
-        int target = digitsC.get(pos);
-        for (int i = 0; i < digitsA.size(); i++) {
-            if (usedA[i]) continue;
-            int da = digitsA.get(i);
-
-            for (int j = 0; j < digitsB.size(); j++) {
-                if (usedB[j]) continue;
-                int db = digitsB.get(j);
-
-                int sum = da + db + carry;
-                if (sum % 10 == target) {
-                    usedA[i] = true;
-                    usedB[j] = true;
-                    pathA.add(da);
-                    pathB.add(db);
-
-                    dfs(pos - 1, sum / 10, usedA, usedB, pathA, pathB);
-
-                    pathA.remove(pathA.size() - 1);
-                    pathB.remove(pathB.size() - 1);
-                    usedA[i] = false;
-                    usedB[j] = false;
-                }
+        Set<Character> used = new HashSet<>();
+        for (int i = index; i < bChars.length; i++) {
+            if (!used.contains(bChars[i])) {
+                used.add(bChars[i]);
+                swap(bChars, index, i);
+                permuteB(bChars, index + 1, cVal, x, result);
+                swap(bChars, index, i);
             }
         }
     }
 
-    static String join(int[] arr) {
-        StringBuilder sb = new StringBuilder();
-        for (int d : arr) sb.append(d);
-        return sb.toString();
+    private static void swap(char[] arr, int i, int j) {
+        char tmp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = tmp;
     }
+
+    private static int digitSum(String num) {
+        int sum = 0;
+        for (char ch : num.toCharArray()) {
+            sum += Character.getNumericValue(ch);
+        }
+        return sum;
+    }
+
+    private static String normalizeNumber(String num) {
+        int i = 0;
+        while (i < num.length() - 1 && num.charAt(i) == '0') {
+            i++;
+        }
+        return num.substring(i);
+    }
+
 }
