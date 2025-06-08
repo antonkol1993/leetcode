@@ -34,15 +34,21 @@ public class Main {
             int sumA = digitSum(a);
             int sumB = digitSum(b);
             int sumC = digitSum(c);
-            if ((sumA + sumB - sumC) % 9 != 0) {
-                writer.write("NO\n");
-                continue;
-            }
+
 
             digitsA = toDigitsReversed(a);
             digitsB = toDigitsReversed(b);
             digitsC = toDigitsReversed(c);
             n = digitsC.length;
+
+//            if ((sumA + sumB - sumC) % 9 != 0) {
+//                writer.write("NO\n");
+//                continue;
+//            }
+//            if (digitsA.length + digitsB.length < digitsC.length) {
+//                writer.write("NO\n");
+//                continue;
+//            }
 
             usedA = new boolean[digitsA.length];
             usedB = new boolean[digitsB.length];
@@ -50,6 +56,9 @@ public class Main {
             answerX = null;
             answerY = null;
             found = false;
+
+            Arrays.sort(digitsA);
+            Arrays.sort(digitsB);
 
             // Запускаем DFS с позиции 0 и переносом 0
             if (dfs(0, 0, new ArrayList<>(), new ArrayList<>())) {
@@ -64,25 +73,26 @@ public class Main {
     }
 
     private static boolean dfs(int pos, int carry, List<Integer> currentX, List<Integer> currentY) {
-        if (found) return true; // прерывание после нахождения решения
+        if (found) return true;
 
-        if (pos == n) {
+        if (pos == digitsC.length) {
             if (carry == 0 && allUsed(usedA) && allUsed(usedB)) {
+                // Успех — сохраняем ответ
                 answerX = new int[currentX.size()];
                 answerY = new int[currentY.size()];
                 for (int i = 0; i < currentX.size(); i++) answerX[i] = currentX.get(i);
                 for (int i = 0; i < currentY.size(); i++) answerY[i] = currentY.get(i);
+
+                if (hasLeadingZero(answerX) || hasLeadingZero(answerY)) return false;
+
                 found = true;
                 return true;
             }
             return false;
         }
 
-        int targetDigit = digitsC[pos];
+        int target = digitsC[pos];
 
-        // Перебираем i,j, i и j могут быть "пустыми" позициями (число короче)
-        // Чтобы учесть "пропуск" цифры, добавляем фиктивный индекс digitsA.length и digitsB.length,
-        // означающий "цифры нет (0)"
         for (int i = 0; i <= digitsA.length; i++) {
             if (i < digitsA.length && usedA[i]) continue;
             int digitA = (i < digitsA.length) ? digitsA[i] : 0;
@@ -92,26 +102,31 @@ public class Main {
                 int digitB = (j < digitsB.length) ? digitsB[j] : 0;
 
                 int sum = digitA + digitB + carry;
-                if (sum % 10 == targetDigit) {
-                    // Используем цифры, если не фиктивные
-                    if (i < digitsA.length) usedA[i] = true;
-                    if (j < digitsB.length) usedB[j] = true;
+                if (sum % 10 != target) continue;
 
-                    currentX.add(digitA);
-                    currentY.add(digitB);
+                // Отметим, если цифры реальные
+                if (i < digitsA.length) usedA[i] = true;
+                if (j < digitsB.length) usedB[j] = true;
 
-                    if (dfs(pos + 1, sum / 10, currentX, currentY)) return true;
+                currentX.add(digitA);
+                currentY.add(digitB);
 
-                    currentX.remove(currentX.size() - 1);
-                    currentY.remove(currentY.size() - 1);
+                if (dfs(pos + 1, sum / 10, currentX, currentY)) return true;
 
-                    if (i < digitsA.length) usedA[i] = false;
-                    if (j < digitsB.length) usedB[j] = false;
-                }
+                // Откат
+                currentX.remove(currentX.size() - 1);
+                currentY.remove(currentY.size() - 1);
+                if (i < digitsA.length) usedA[i] = false;
+                if (j < digitsB.length) usedB[j] = false;
             }
         }
+
         return false;
     }
+
+
+
+
 
     private static boolean allUsed(boolean[] used) {
         for (boolean b : used) {
