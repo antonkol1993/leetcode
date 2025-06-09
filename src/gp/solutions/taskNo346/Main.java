@@ -36,9 +36,14 @@ public class Main {
             int sumC = digitSum(c);
 
 
-            digitsA = toDigitsReversed(a);
-            digitsB = toDigitsReversed(b);
-            digitsC = toDigitsReversed(c);
+            digitsA = toDigits(a);
+            Arrays.sort(digitsA);
+
+            digitsB = toDigits(b);
+            Arrays.sort(digitsB);
+            reverse(digitsB);
+
+            digitsC = toDigits(c);
             n = digitsC.length;
 
 //            if ((sumA + sumB - sumC) % 9 != 0) {
@@ -83,8 +88,6 @@ public class Main {
                 for (int i = 0; i < currentX.size(); i++) answerX[i] = currentX.get(i);
                 for (int i = 0; i < currentY.size(); i++) answerY[i] = currentY.get(i);
 
-                if (hasLeadingZero(answerX) || hasLeadingZero(answerY)) return false;
-
                 found = true;
                 return true;
             }
@@ -125,9 +128,6 @@ public class Main {
     }
 
 
-
-
-
     private static boolean allUsed(boolean[] used) {
         for (boolean b : used) {
             if (!b) return false;
@@ -140,14 +140,24 @@ public class Main {
         return digits.length > 1 && digits[digits.length - 1] == 0;
     }
 
-    private static int[] toDigitsReversed(String num) {
-        int len = num.length();
-        int[] digits = new int[len];
-        for (int i = 0; i < len; i++) {
-            digits[i] = num.charAt(len - 1 - i) - '0';
+    private static int[] toDigits(String num) {
+        int[] digits = new int[num.length()];
+        for (int i = 0; i < num.length(); i++) {
+            digits[i] = num.charAt(i) - '0';
         }
         return digits;
     }
+
+
+
+    private static void reverse(int[] arr) {
+        for (int i = 0, j = arr.length - 1; i < j; i++, j--) {
+            int temp = arr[i];
+            arr[i] = arr[j];
+            arr[j] = temp;
+        }
+    }
+
 
     private static String toNumberString(int[] digits) {
         StringBuilder sb = new StringBuilder();
