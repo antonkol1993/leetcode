@@ -3,7 +3,7 @@ package gp.solutions.taskNo346;
 import java.io.*;
 import java.util.*;
 
-public class Main4 {
+public class Main_8TEST_PERMUTE {
 
     public class Main {
         static List<String> permutations(String num) {
