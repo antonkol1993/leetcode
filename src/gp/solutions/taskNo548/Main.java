@@ -14,23 +14,25 @@ public class Main {
         int i = 0, j = 0;
         StringBuilder result = new StringBuilder();
 
+        // цикл: пока есть хотя бы одна непросмотренная цифра
         while (i < num1.length() && j < num2.length()) {
             char c1 = num1.charAt(i);
             char c2 = num2.charAt(j);
 
             if (c1 < c2) {
-                result.append(c1);
+                result.append(c1); // выбираем меньшую цифру
                 i++;
             } else if (c1 > c2) {
                 result.append(c2);
                 j++;
             } else {
+                // Если цифры равны — смотрим вперёд
                 int tempI = i, tempJ = j;
                 while (tempI < num1.length() && tempJ < num2.length() && num1.charAt(tempI) == num2.charAt(tempJ)) {
                     tempI++;
                     tempJ++;
                 }
-
+                // Если одна из строк закончилась — берем из другой
                 if (tempI == num1.length()) {
                     result.append(c2);
                     j++;

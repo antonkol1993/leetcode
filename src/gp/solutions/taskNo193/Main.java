@@ -43,7 +43,7 @@ public class Main {
                 int rect = field[i][j];
                 if (rect > 0) {
                     int y = N - 1 - i;
-                    int x = j;    // избыточный, но так легче понимать код
+                    int x = j;    // избыточная строка, но так легче понимать код
                     minX[rect] = Math.min(minX[rect], x);
                     maxX[rect] = Math.max(maxX[rect], x + 1);
                     minY[rect] = Math.min(minY[rect], y);
@@ -55,10 +55,8 @@ public class Main {
         // write result
         BufferedWriter writer = new BufferedWriter(new FileWriter("OUTPUT.TXT"));
         for (int i = 1; i <= K; i++) {
-            //условие. Если не найдено число в поле и оно не имеет 0, то rect скрыт под всеми
-            //и он на всё поле.
-            // если есть 0, то оно под всем прямоугольниками
-            //Иначе, записываем
+            //Если не найдено число в поле и оно не имеет 0, то rect скрыт под всем и он на всё поле.
+            // или может быть скрыт под прямоугольниками
             if (!found[i]) {
                 if (!hasZero) {
                     writer.write("0 0 " + M + " " + N);
@@ -71,7 +69,7 @@ public class Main {
                     for (int row = 0; row < N; row++) {
                         for (int col = 0; col < M; col++) {
                             if (field[row][col] != 0) {
-                                int x = col; // избыточный, но так легче понимать код
+                                int x = col; // избыточная строка, но так легче понимать код
                                 int y = N - 1 - row;
                                 localMinX = Math.min(localMinX, x);
                                 localMaxX = Math.max(localMaxX, x + 1);

@@ -5,7 +5,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class Main_2TEST_YOURS {
+public class Main_2_WrongAnswer {
 
     public static void main(String[] args) throws IOException {
         try (BufferedReader reader = new BufferedReader(new FileReader("INPUT.TXT"));

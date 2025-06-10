@@ -3,11 +3,11 @@ package gp.solutions.taskNo346;
 import java.io.*;
 import java.util.*;
 
-public class Main_4TEST {
-    static int n;              // длина числа C
-    static int[] digitsA;      // цифры A (от младшего к старшему)
-    static int[] digitsB;      // цифры B (от младшего к старшему)
-    static int[] digitsC;      // цифры C (от младшего к старшему)
+public class Main_4_WrongAnswer {
+    static int n;
+    static int[] digitsA;
+    static int[] digitsB;
+    static int[] digitsC;
     static boolean[] usedA;
     static boolean[] usedB;
     static int[] answerX;
@@ -30,7 +30,7 @@ public class Main_4TEST {
             String b = parts[1];
             String c = parts[2];
 
-            // Быстрая проверка кратности 9 (необходимое условие)
+
             int sumA = digitSum(a);
             int sumB = digitSum(b);
             int sumC = digitSum(c);
@@ -47,14 +47,15 @@ public class Main_4TEST {
             reverse(digitsC);
             n = digitsC.length;
 
-//            if ((sumA + sumB - sumC) % 9 != 0) {
-//                writer.write("NO\n");
-//                continue;
-//            }
-//            if (digitsA.length + digitsB.length < digitsC.length) {
-//                writer.write("NO\n");
-//                continue;
-//            }
+            // Быстрая проверка кратности 9
+            if ((sumA + sumB - sumC) % 9 != 0) {
+                writer.write("NO\n");
+                continue;
+            }
+            if (digitsA.length + digitsB.length < digitsC.length) {
+                writer.write("NO\n");
+                continue;
+            }
 
             usedA = new boolean[digitsA.length];
             usedB = new boolean[digitsB.length];
@@ -134,11 +135,6 @@ public class Main_4TEST {
             if (!b) return false;
         }
         return true;
-    }
-
-    private static boolean hasLeadingZero(int[] digits) {
-        // digits в обратном порядке, ведущий ноль - последний элемент массива, если длина > 1
-        return digits.length > 1 && digits[digits.length - 1] == 0;
     }
 
     private static int[] toDigits(String num) {
