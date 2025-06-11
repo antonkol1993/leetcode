@@ -63,7 +63,10 @@ public class MainOptimize {
 
             String fromStr = fromToStr(from);
 
-            boolean can = canFormTogether(xStr, yStr, aFirst ? fromToStr(from) : other, aFirst ? other : fromToStr(from));
+            boolean can = aFirst
+                    ? canForm(xStr, fromStr) && canForm(yStr, other)
+                    : canForm(yStr, fromStr) && canForm(xStr, other);
+
 
 
 
@@ -94,22 +97,17 @@ public class MainOptimize {
         return false;
     }
 
-    static boolean canFormTogether(String xStr, String yStr, String a, String b) {
-        int[] totalDigits = new int[10];
-        for (char ch : (a + b).toCharArray()) {
-            totalDigits[ch - '0']++;
+    static boolean canForm(String value, String source) {
+        int[] count = new int[10];
+        for (char ch : source.toCharArray()) {
+            count[ch - '0']++;
         }
-
-        for (char ch : xStr.toCharArray()) {
-            if (--totalDigits[ch - '0'] < 0) return false;
+        for (char ch : value.toCharArray()) {
+            if (--count[ch - '0'] < 0) return false;
         }
-
-        for (char ch : yStr.toCharArray()) {
-            if (--totalDigits[ch - '0'] < 0) return false;
-        }
-
         return true;
     }
+
 
 
     static String fromToStr(char[] arr) {
