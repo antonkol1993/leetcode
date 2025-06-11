@@ -18,20 +18,23 @@ public class Main_8_Memory_Limit_Exceeded {
 
         Collections.sort(aPerms); // Чтобы минимальный x нашёлся первым
 
+
         outer:
         for (String x : aPerms) {
             for (String y : bPerms) {
                 if (checkSum(x, y, c)) {
+                    printMemory("After solving");
                     writer.write("YES\n");
                     writer.write(x + " " + y);
+                    break outer;
+                } else {
+                    writer.write("NO\n");
                     break outer;
                 }
             }
         }
 
-        if (!writer.toString().contains("YES")) {
-            writer.write("NO");
-        }
+
 
         reader.close();
         writer.close();
@@ -85,5 +88,12 @@ public class Main_8_Memory_Limit_Exceeded {
         }
 
         return k < 0;
+    }
+
+    static void printMemory(String stage) {
+        Runtime runtime = Runtime.getRuntime();
+        runtime.gc(); // запуск сборки мусора для более точного измерения
+        long usedMemory = runtime.totalMemory() - runtime.freeMemory();
+        System.out.printf("%s - Used memory: %.2f MB%n", stage, usedMemory / (1024.0 * 1024.0));
     }
 }
