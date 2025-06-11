@@ -43,12 +43,7 @@ public class MainOptimize {
                                     String other, String c, boolean aFirst, BufferedWriter writer) throws IOException {
         if (prefix.length() == from.length) {
             String xStr = prefix;
-            int x;
-            try {
-                x = Integer.parseInt(xStr);
-            } catch (NumberFormatException e) {
-                return false;
-            }
+            int x = Integer.parseInt(xStr);
 
             int target;
             try {
@@ -64,10 +59,8 @@ public class MainOptimize {
             String fromStr = fromToStr(from);
 
             boolean can = aFirst
-                    ? canForm(xStr, fromStr) && canForm(yStr, other)
-                    : canForm(yStr, fromStr) && canForm(xStr, other);
-
-
+                    ? canFormStrict(xStr, fromStr) && canFormStrict(yStr, other)
+                    : canFormStrict(yStr, fromStr) && canFormStrict(xStr, other);
 
 
             if (can) {
@@ -97,18 +90,25 @@ public class MainOptimize {
         return false;
     }
 
-    static boolean canForm(String value, String source) {
-        int[] count = new int[10];
-        for (char ch : source.toCharArray()) {
-            count[ch - '0']++;
+    static boolean canFormStrict(String value, String source) {
+        int[] countSource = new int[10];
+        int[] countValue = new int[10];
+
+        for (char ch : source.toCharArray()) countSource[ch - '0']++;
+        for (char ch : value.toCharArray()) countValue[ch - '0']++;
+
+        // Проверка: хватает ли каждой цифры в source
+        for (int i = 0; i < 10; i++) {
+            if (countSource[i] < countValue[i]) return false;
         }
-        for (char ch : value.toCharArray()) {
-            if (--count[ch - '0'] < 0) return false;
+
+        // Проверка: в source не остались неиспользованные НЕ-нули
+        for (int i = 1; i < 10; i++) {
+            if (countSource[i] > countValue[i]) return false;
         }
+
         return true;
     }
-
-
 
     static String fromToStr(char[] arr) {
         StringBuilder sb = new StringBuilder();
@@ -124,14 +124,6 @@ public class MainOptimize {
         long max = runtime.maxMemory() / 1024;
         System.out.printf("[%s] Used memory: %d KB | Free memory: %d KB | Max memory: %d KB%n",
                 label, used, free, max);
-    }
-    static boolean isPermutation(String a, String b) {
-        if (a.length() != b.length()) return false;
-        char[] aChars = a.toCharArray();
-        char[] bChars = b.toCharArray();
-        Arrays.sort(aChars);
-        Arrays.sort(bChars);
-        return Arrays.equals(aChars, bChars);
     }
 
 }
