@@ -16,14 +16,14 @@ public class MainOptimize {
         boolean found = false;
 
         char[] aChars = a.toCharArray();
-        Arrays.sort(aChars);  // для минимального X
+        Arrays.sort(aChars);
         boolean[] usedA = new boolean[a.length()];
 
         found = generateAndCheck(aChars, usedA, "", b, c, true, writer);
 
         if (!found) {
             char[] bChars = b.toCharArray();
-            Arrays.sort(bChars);  // для минимального X
+            Arrays.sort(bChars);
             boolean[] usedB = new boolean[b.length()];
 
             found = generateAndCheck(bChars, usedB, "", a, c, false, writer);
@@ -42,17 +42,32 @@ public class MainOptimize {
     static boolean generateAndCheck(char[] from, boolean[] used, String prefix,
                                     String other, String c, boolean aFirst, BufferedWriter writer) throws IOException {
         if (prefix.length() == from.length) {
-            int x = Integer.parseInt(prefix); // Даже если prefix = "0011", x = 11
-            int y;
+            String xStr = prefix;
+            int x;
             try {
-                y = Integer.parseInt(c) - x;
+                x = Integer.parseInt(xStr);
             } catch (NumberFormatException e) {
-                return false; // если c слишком большое для int
+                return false;
             }
-            if (y < 0) return false;
 
-// Проверяем, можно ли из other собрать y
-            if (canForm(String.valueOf(y), other)) {
+            int target;
+            try {
+                target = Integer.parseInt(c);
+            } catch (NumberFormatException e) {
+                return false;
+            }
+
+            int y = target - x;
+            if (y < 0) return false;
+            String yStr = String.valueOf(y);
+
+            String fromStr = fromToStr(from);
+
+            boolean can = canFormTogether(xStr, yStr, aFirst ? fromToStr(from) : other, aFirst ? other : fromToStr(from));
+
+
+
+            if (can) {
                 writer.write("YES\n");
                 if (aFirst) {
                     writer.write(x + " " + y + "\n");
@@ -61,7 +76,6 @@ public class MainOptimize {
                 }
                 return true;
             }
-
 
             return false;
         }
@@ -80,15 +94,28 @@ public class MainOptimize {
         return false;
     }
 
-    static boolean canForm(String value, String source) {
-        int[] count = new int[10];
-        for (char ch : source.toCharArray()) {
-            count[ch - '0']++;
+    static boolean canFormTogether(String xStr, String yStr, String a, String b) {
+        int[] totalDigits = new int[10];
+        for (char ch : (a + b).toCharArray()) {
+            totalDigits[ch - '0']++;
         }
-        for (char ch : value.toCharArray()) {
-            if (--count[ch - '0'] < 0) return false;
+
+        for (char ch : xStr.toCharArray()) {
+            if (--totalDigits[ch - '0'] < 0) return false;
         }
+
+        for (char ch : yStr.toCharArray()) {
+            if (--totalDigits[ch - '0'] < 0) return false;
+        }
+
         return true;
+    }
+
+
+    static String fromToStr(char[] arr) {
+        StringBuilder sb = new StringBuilder();
+        for (char c : arr) sb.append(c);
+        return sb.toString();
     }
 
     static void printMemory(String label) {
@@ -100,4 +127,13 @@ public class MainOptimize {
         System.out.printf("[%s] Used memory: %d KB | Free memory: %d KB | Max memory: %d KB%n",
                 label, used, free, max);
     }
+    static boolean isPermutation(String a, String b) {
+        if (a.length() != b.length()) return false;
+        char[] aChars = a.toCharArray();
+        char[] bChars = b.toCharArray();
+        Arrays.sort(aChars);
+        Arrays.sort(bChars);
+        return Arrays.equals(aChars, bChars);
+    }
+
 }
