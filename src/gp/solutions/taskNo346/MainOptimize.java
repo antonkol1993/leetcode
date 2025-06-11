@@ -5,7 +5,6 @@ import java.util.*;
 
 public class MainOptimize {
     public static void main(String[] args) throws IOException {
-        printMemory("Before");
 
         BufferedReader reader = new BufferedReader(new FileReader("INPUT.TXT"));
         BufferedWriter writer = new BufferedWriter(new FileWriter("OUTPUT.TXT"));
@@ -13,14 +12,16 @@ public class MainOptimize {
         String[] parts = reader.readLine().trim().split(" ");
         String a = parts[0], b = parts[1], c = parts[2];
 
-        boolean found = false;
+        boolean found; //false
 
+        // Пробуем переставить цифры в `a`, чтобы найти возможный x
         char[] aChars = a.toCharArray();
-        Arrays.sort(aChars);
+        Arrays.sort(aChars); // Сортировка
         boolean[] usedA = new boolean[a.length()];
 
         found = generateAndCheck(aChars, usedA, "", b, c, true, writer);
 
+        // Если не`A`, то идем в `B`
         if (!found) {
             char[] bChars = b.toCharArray();
             Arrays.sort(bChars);
@@ -29,19 +30,18 @@ public class MainOptimize {
             found = generateAndCheck(bChars, usedB, "", a, c, false, writer);
         }
 
+        // Если ни A, ни B, то NO
         if (!found) {
             writer.write("NO\n");
         }
-
         reader.close();
         writer.close();
 
-        printMemory("After");
     }
 
-    static boolean generateAndCheck(char[] from, boolean[] used, String prefix,
+    static boolean generateAndCheck(char[] chars, boolean[] used, String prefix,
                                     String other, String c, boolean aFirst, BufferedWriter writer) throws IOException {
-        if (prefix.length() == from.length) {
+        if (prefix.length() == chars.length) {
             String xStr = prefix;
             int x = Integer.parseInt(xStr);
 
@@ -56,12 +56,11 @@ public class MainOptimize {
             if (y < 0) return false;
             String yStr = String.valueOf(y);
 
-            String fromStr = fromToStr(from);
+            String fromStr = new String(chars);
 
             boolean can = aFirst
-                    ? canFormStrict(xStr, fromStr) && canFormStrict(yStr, other)
-                    : canFormStrict(yStr, fromStr) && canFormStrict(xStr, other);
-
+                    ? isCanBuild(xStr, fromStr) && isCanBuild(yStr, other)
+                    : isCanBuild(yStr, fromStr) && isCanBuild(xStr, other);
 
             if (can) {
                 writer.write("YES\n");
@@ -76,12 +75,12 @@ public class MainOptimize {
             return false;
         }
 
-        for (int i = 0; i < from.length; i++) {
+        for (int i = 0; i < chars.length; i++) {
             if (used[i]) continue;
-            if (i > 0 && from[i] == from[i - 1] && !used[i - 1]) continue;
+            if (i > 0 && chars[i] == chars[i - 1] && !used[i - 1]) continue;
 
             used[i] = true;
-            if (generateAndCheck(from, used, prefix + from[i], other, c, aFirst, writer)) {
+            if (generateAndCheck(chars, used, prefix + chars[i], other, c, aFirst, writer)) {
                 return true;
             }
             used[i] = false;
@@ -90,18 +89,25 @@ public class MainOptimize {
         return false;
     }
 
-    static boolean canFormStrict(String value, String source) {
+    static boolean isCanBuild(String value, String source) {
         int[] countSource = new int[10];
         int[] countValue = new int[10];
 
-        for (char ch : source.toCharArray()) countSource[ch - '0']++;
-        for (char ch : value.toCharArray()) countValue[ch - '0']++;
+        for (int i = 0; i < source.length(); i++) {
+            char ch = source.charAt(i);
+            int digit = Character.getNumericValue(ch);
+            countSource[digit]++;
+        }
 
+        for (int i = 0; i < value.length(); i++) {
+            char ch = value.charAt(i);
+            int digit = Character.getNumericValue(ch);
+            countValue[digit]++;
+        }
         // Проверка: хватает ли каждой цифры в source
         for (int i = 0; i < 10; i++) {
             if (countSource[i] < countValue[i]) return false;
         }
-
         // Проверка: в source не остались неиспользованные НЕ-нули
         for (int i = 1; i < 10; i++) {
             if (countSource[i] > countValue[i]) return false;
@@ -110,20 +116,5 @@ public class MainOptimize {
         return true;
     }
 
-    static String fromToStr(char[] arr) {
-        StringBuilder sb = new StringBuilder();
-        for (char c : arr) sb.append(c);
-        return sb.toString();
-    }
-
-    static void printMemory(String label) {
-        Runtime runtime = Runtime.getRuntime();
-        long total = runtime.totalMemory() / 1024;
-        long free = runtime.freeMemory() / 1024;
-        long used = total - free;
-        long max = runtime.maxMemory() / 1024;
-        System.out.printf("[%s] Used memory: %d KB | Free memory: %d KB | Max memory: %d KB%n",
-                label, used, free, max);
-    }
 
 }
